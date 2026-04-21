@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useProjects } from '../../hooks/useProjects';
+import { useAuth } from '../../context/AuthContext';
 import ProjectList from './ProjectList';
 import NewProjectButton from './NewProjectButton';
 import ProjectForm from '../ProjectForm/ProjectForm';
@@ -8,6 +9,7 @@ import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
+  const { logout } = useAuth();
   const { state, addProject } = useProjects();
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'cards' | 'gerencial'>('cards');
@@ -78,7 +80,23 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <NewProjectButton onClick={() => setShowForm(true)} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button 
+             onClick={() => logout()} 
+             style={{ 
+               background: 'transparent',
+               border: '1px solid #ef4444',
+               color: '#ef4444',
+               padding: '8px 16px',
+               borderRadius: '6px',
+               cursor: 'pointer',
+               fontWeight: 'bold'
+             }}
+          >
+            Sair
+          </button>
+          <NewProjectButton onClick={() => setShowForm(true)} />
+        </div>
       </header>
 
       <main className={styles.content}>
