@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../../config/firebase';
 import './Auth.css';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setError('');
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Context will update automatically, Navigate to dashboard
+      await signInWithPopup(auth, googleProvider);
       navigate('/');
     } catch (err: any) {
       console.error(err);
-      setError('Falha ao fazer login. Verifique seu email e senha.');
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('O login foi cancelado.');
+      } else {
+        setError('Falha ao fazer login com o Google.');
+      }
     } finally {
       setLoading(false);
     }
@@ -35,40 +35,30 @@ const Login: React.FC = () => {
           <div className="auth-card-logo-icon">gv</div>
         </div>
         <h2 className="auth-card-title">Bem-vindo de volta</h2>
-        <p className="auth-card-subtitle">Entre para gerenciar seus projetos</p>
+        <p className="auth-card-subtitle">Entre para gerenciar seus projetos usando sua conta Google</p>
         
         {error && <div className="auth-alert">{error}</div>}
         
-        <form onSubmit={handleLogin}>
-          <div className="auth-input-group">
-            <label htmlFor="email">E-mail</label>
-            <input 
-              id="email"
-              type="email" 
-              className="auth-input" 
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
+        <button 
+          onClick={handleGoogleLogin} 
+          className="auth-button" 
+          disabled={loading}
+          style={{
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '12px',
+            background: 'linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%)',
+          }}
+        >
+          <svg style={{width: 24, height: 24}} viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z"
             />
-          </div>
-          <div className="auth-input-group">
-            <label htmlFor="password">Senha</label>
-            <input 
-              id="password"
-              type="password" 
-              className="auth-input" 
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-            />
-          </div>
-          
-          <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
+          </svg>
+          {loading ? 'Redirecionando...' : 'Continuar com o Google'}
+        </button>
         
         <div className="auth-footer">
           Não tem uma conta? <Link to="/register" className="auth-link">Cadastre-se</Link>

@@ -6,6 +6,7 @@ import NewProjectButton from './NewProjectButton';
 import ProjectForm from '../ProjectForm/ProjectForm';
 import type { ProjectFormData } from '../../types/project';
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
+import { PortugueseTaskListHeader } from '../Timeline/GanttCustomComponents';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
@@ -13,6 +14,8 @@ export default function Dashboard() {
   const { state, addProject } = useProjects();
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'cards' | 'gerencial'>('cards');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Month);
 
   const handleFormSubmit = (data: ProjectFormData) => {
     addProject(data);
@@ -22,76 +25,65 @@ export default function Dashboard() {
   const gerencialTasks: Task[] = useMemo(() => {
     // Map projects into the master gantt
     if (state.projects.length === 0) return [];
-    
-    return state.projects.map(p => {
-       // calculate progress based on activities
-       const pActivities = state.activities.filter(a => a.projectId === p.id);
-       let progress = 0;
-       if (pActivities.length > 0) {
-         progress = pActivities.reduce((acc, curr) => acc + curr.progress, 0) / pActivities.length;
-       }
 
-       return {
-         id: p.id,
-         type: "project" as const,
-         name: p.nome,
-         start: new Date(`${p.dataInicio}T00:00:00`),
-         end: new Date(`${p.dataFim}T23:59:59`),
-         progress: progress,
-         isDisabled: true, // Master view is read-only for now
-         styles: { backgroundColor: '#6366f1', progressColor: '#4f46e5', progressSelectedColor: '#4f46e5', backgroundSelectedColor: '#6366f1' }
-       };
-    });
+    return state.projects
+      .filter(p => p.nome.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map(p => {
+        // calculate progress based on activities
+        const pActivities = state.activities.filter(a => a.projectId === p.id);
+        let progress = 0;
+        if (pActivities.length > 0) {
+          progress = pActivities.reduce((acc, curr) => acc + curr.progress, 0) / pActivities.length;
+        }
+
+        return {
+          id: p.id,
+          type: "project" as const,
+          name: p.nome,
+          start: new Date(`${p.dataInicio}T00:00:00`),
+          end: new Date(`${p.dataFim}T23:59:59`),
+          progress: progress,
+          isDisabled: true, // Master view is read-only for now
+          styles: {
+            backgroundColor: '#6366f1',
+            progressColor: '#4f46e5',
+            progressSelectedColor: '#4f46e5',
+            backgroundSelectedColor: '#6366f1',
+            projectBackgroundColor: '#6366f1',
+            projectBackgroundSelectedColor: '#6366f1',
+            projectProgressColor: '#4f46e5',
+            projectProgressSelectedColor: '#4f46e5'
+          }
+        };
+      });
   }, [state.projects, state.activities]);
 
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className={styles.titleGroup}>
           <h1 className={styles.title}>Visão Gerencial</h1>
-          
-          <div style={{ display: 'flex', gap: '16px', borderBottom: '2px solid #e5e7eb', paddingBottom: '8px' }}>
-             <button 
-              onClick={() => setActiveTab('cards')} 
-               style={{ 
-                 background: 'none', 
-                 border: 'none', 
-                 fontSize: '16px', 
-                 fontWeight: activeTab === 'cards' ? 'bold' : 'normal',
-                 color: activeTab === 'cards' ? '#3b82f6' : '#6b7280',
-                 cursor: 'pointer'
-               }}
-             >
-               Lista de Projetos
-             </button>
-             <button 
-               onClick={() => setActiveTab('gerencial')} 
-               style={{ 
-                 background: 'none', 
-                 border: 'none', 
-                 fontSize: '16px', 
-                 fontWeight: activeTab === 'gerencial' ? 'bold' : 'normal',
-                 color: activeTab === 'gerencial' ? '#3b82f6' : '#6b7280',
-                 cursor: 'pointer'
-               }}
-             >
-               Timeline Mãe (Todos os Projetos)
-             </button>
+
+          <div className={styles.tabGroup}>
+            <button
+              onClick={() => setActiveTab('cards')}
+              className={`${styles.tabButton} ${activeTab === 'cards' ? styles.tabButtonActive : ''}`}
+            >
+              Lista de Projetos
+            </button>
+            <button
+              onClick={() => setActiveTab('gerencial')}
+              className={`${styles.tabButton} ${activeTab === 'gerencial' ? styles.tabButtonActive : ''}`}
+            >
+              Timeline Mãe (Todos os Projetos)
+            </button>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button 
-             onClick={() => logout()} 
-             style={{ 
-               background: 'transparent',
-               border: '1px solid #ef4444',
-               color: '#ef4444',
-               padding: '8px 16px',
-               borderRadius: '6px',
-               cursor: 'pointer',
-               fontWeight: 'bold'
-             }}
+        <div className={styles.actionGroup}>
+          <button
+            onClick={() => logout()}
+            className={styles.logoutButton}
           >
             Sair
           </button>
@@ -107,19 +99,45 @@ export default function Dashboard() {
           </div>
         ) : (
           activeTab === 'cards' ? (
-             <ProjectList projects={state.projects} />
+            <ProjectList projects={state.projects} />
           ) : (
-             <div style={{ background: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <div className={styles.gerencialContent}>
+              <div className={styles.toolbar}>
+                <input
+                  type="text"
+                  placeholder="Buscar projeto..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.filterInput}
+                />
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value as ViewMode)}
+                  className={styles.viewSelect}
+                >
+                  <option value={ViewMode.Day}>Dia</option>
+                  <option value={ViewMode.Week}>Semana</option>
+                  <option value={ViewMode.Month}>Mês</option>
+                  <option value={ViewMode.Year}>Ano</option>
+                </select>
+              </div>
+
+              <div className={styles.ganttContainer}>
                 {gerencialTasks.length > 0 ? (
-                  <Gantt 
-                    tasks={gerencialTasks} 
-                    viewMode={ViewMode.Month} 
-                    listCellWidth="155px" 
-                  />
+                  <div className="gantt-light-theme">
+                    <Gantt
+                      tasks={gerencialTasks}
+                      locale="pt-BR"
+                      viewMode={viewMode}
+                      listCellWidth="155px"
+                      TaskListHeader={PortugueseTaskListHeader}
+                    />
+                  </div>
                 ) : (
-                  <p>Nenhum projeto cadastrado.</p>
+                  <p className={styles.emptyState}>Nenhum projeto encontrado com os filtros aplicados.</p>
                 )}
-             </div>
+              </div>
+            </div>
           )
         )}
       </main>

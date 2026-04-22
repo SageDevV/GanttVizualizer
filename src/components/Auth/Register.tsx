@@ -1,41 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../../config/firebase';
 import './Auth.css';
 
 const Register: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleRegister = async () => {
     setError('');
-
-    if (password !== confirmPassword) {
-      return setError('As senhas não coincidem.');
-    }
-
-    if (password.length < 6) {
-      return setError('A senha deve ter pelo menos 6 caracteres.');
-    }
-
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Context will update automatically, Navigate to dashboard
+      await signInWithPopup(auth, googleProvider);
       navigate('/');
     } catch (err: any) {
       console.error(err);
-      if (err.code === 'auth/email-already-in-use') {
-        setError('Este e-mail já está em uso.');
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('O cadastro foi cancelado.');
       } else {
-        setError('Falha ao criar conta. Tente novamente mais tarde.');
+        setError('Falha ao criar conta com o Google. Tente novamente.');
       }
     } finally {
       setLoading(false);
@@ -49,52 +35,30 @@ const Register: React.FC = () => {
           <div className="auth-card-logo-icon" style={{background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)'}}>gv</div>
         </div>
         <h2 className="auth-card-title">Crie sua conta</h2>
-        <p className="auth-card-subtitle">Comece a planejar seus projetos agora</p>
+        <p className="auth-card-subtitle">Comece a planejar seus projetos facilmente com o Google</p>
         
         {error && <div className="auth-alert">{error}</div>}
         
-        <form onSubmit={handleRegister}>
-          <div className="auth-input-group">
-            <label htmlFor="email">E-mail</label>
-            <input 
-              id="email"
-              type="email" 
-              className="auth-input" 
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
+        <button 
+          onClick={handleGoogleRegister} 
+          className="auth-button" 
+          disabled={loading} 
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '12px'
+          }}
+        >
+          <svg style={{width: 24, height: 24}} viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z"
             />
-          </div>
-          <div className="auth-input-group">
-            <label htmlFor="password">Senha</label>
-            <input 
-              id="password"
-              type="password" 
-              className="auth-input" 
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-            />
-          </div>
-          <div className="auth-input-group">
-            <label htmlFor="confirmPassword">Confirmar Senha</label>
-            <input 
-              id="confirmPassword"
-              type="password" 
-              className="auth-input" 
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required 
-            />
-          </div>
-          
-          <button type="submit" className="auth-button" disabled={loading} style={{background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)'}}>
-            {loading ? 'Criando...' : 'Cadastrar'}
-          </button>
-        </form>
+          </svg>
+          {loading ? 'Redirecionando...' : 'Cadastrar com o Google'}
+        </button>
         
         <div className="auth-footer">
           Já tem uma conta? <Link to="/login" className="auth-link" style={{color: '#3b82f6'}}>Entrar</Link>

@@ -46,20 +46,20 @@ export default function TimelinePage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className={styles.titleGroup}>
           <h1 className={styles.title}>{project.nome}</h1>
           <Link to="/" className={styles.backLink}>
             ← Voltar ao Dashboard
           </Link>
         </div>
         
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div className={styles.filterGroup}>
             <input 
               type="text" 
               placeholder="Buscar tarefa..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              className={styles.input}
             />
             
             <input 
@@ -67,13 +67,13 @@ export default function TimelinePage() {
               placeholder="Responsável"
               value={filterAssignee}
               onChange={(e) => setFilterAssignee(e.target.value)}
-              style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              className={styles.input}
             />
 
             <select 
               value={viewMode} 
               onChange={(e) => setViewMode(e.target.value as ViewMode)}
-              style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              className={styles.select}
             >
               <option value={ViewMode.Day}>Dia</option>
               <option value={ViewMode.Week}>Semana</option>
@@ -83,7 +83,7 @@ export default function TimelinePage() {
             
             <button 
               onClick={openNewActivityModal}
-              style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+              className={styles.actionButton}
             >
               + Nova Atividade
             </button>
@@ -91,7 +91,7 @@ export default function TimelinePage() {
       </header>
 
       <main className={styles.content}>
-        <div style={{ background: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+        <div className={styles.ganttCard}>
           <AdvancedGantt 
             projectId={project.id} 
             viewMode={viewMode} 

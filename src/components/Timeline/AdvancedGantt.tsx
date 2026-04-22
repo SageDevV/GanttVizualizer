@@ -1,5 +1,6 @@
 import { useMemo, useContext } from 'react';
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
+import { PortugueseTaskListHeader } from './GanttCustomComponents';
 import "gantt-task-react/dist/index.css";
 import { ProjectContext } from '../../context/ProjectContext';
 import { Activity } from '../../types/project';
@@ -29,7 +30,7 @@ export default function AdvancedGantt({
   // Filter activities for this project and apply other filters
   const activities = useMemo(() => {
     let filtered = state.activities.filter(a => a.projectId === projectId);
-    
+
     if (filterAssignee) {
       filtered = filtered.filter(a => a.assignee === filterAssignee);
     }
@@ -39,7 +40,7 @@ export default function AdvancedGantt({
     if (searchQuery) {
       filtered = filtered.filter(a => a.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
-    
+
     return filtered;
   }, [state.activities, projectId, filterAssignee, filterStatus, searchQuery]);
 
@@ -61,15 +62,26 @@ export default function AdvancedGantt({
       const color = getColor(a);
       return {
         id: a.id,
-        type: a.type as "task" | "milestone" | "project", // Matches Gantt library types generally, phase acts as project
+        type: a.type as "task" | "milestone" | "project",
         name: a.name,
         start: new Date(`${a.start}T00:00:00`),
-        end: new Date(`${a.end}T23:59:59`), // Needs to cover the end date visually
+        end: new Date(`${a.end}T23:59:59`),
         progress: a.progress,
         dependencies: a.dependencies,
         project: a.parentId,
         isDisabled: false,
-        styles: { backgroundColor: color, progressColor: color, backgroundSelectedColor: color, progressSelectedColor: color }
+        styles: {
+          backgroundColor: color,
+          progressColor: color,
+          backgroundSelectedColor: color,
+          progressSelectedColor: color,
+          projectBackgroundColor: color,
+          projectBackgroundSelectedColor: color,
+          projectProgressColor: color,
+          projectProgressSelectedColor: color,
+          milestoneBackgroundColor: color,
+          milestoneBackgroundSelectedColor: color
+        }
       };
     });
   }, [activities]);
@@ -78,7 +90,7 @@ export default function AdvancedGantt({
     // Triggered on drag and drop (start/end or progress change)
     // Convert Dates back to YYYY-MM-DD
     const formatDate = (d: Date) => d.toISOString().split('T')[0];
-    
+
     // We must find the original activity to update properly
     const activity = state.activities.find(a => a.id === task.id);
     if (!activity) return;
@@ -104,22 +116,25 @@ export default function AdvancedGantt({
     if (onTaskClick) onTaskClick(task);
   };
 
-  const handleSelect = () => {};
+  const handleSelect = () => { };
 
-  const handleExpanderClick = () => {};
+  const handleExpanderClick = () => { };
 
   if (tasks.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '256px', color: '#94a3b8', fontSize: '1.125rem', textAlign: 'center', padding: '0 2rem' }}>
         Nenhuma atividade encontrada neste projeto. Comece adicionando fases e tarefas.
       </div>
     );
   }
 
+
+
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%', overflowX: 'auto' }} className="gantt-light-theme">
       <Gantt
         tasks={tasks}
+        locale="pt-BR"
         viewMode={viewMode}
         onDateChange={handleTaskChange}
         onProgressChange={handleProgressChange}
@@ -129,6 +144,7 @@ export default function AdvancedGantt({
         onExpanderClick={handleExpanderClick}
         listCellWidth="155px"
         columnWidth={viewMode === ViewMode.Month ? 150 : viewMode === ViewMode.Week ? 150 : 60}
+        TaskListHeader={PortugueseTaskListHeader}
       />
     </div>
   );

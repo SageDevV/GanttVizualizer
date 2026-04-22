@@ -77,26 +77,26 @@ export default function ProjectDetailModal({ projectId, activityId, onClose }: P
 
   return (
     <div className={styles.overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className={styles.modal} style={{ width: '500px', maxWidth: '90vw', overflowY: 'auto', maxHeight: '90vh' }}>
+      <div className={styles.modal}>
         <div className={styles.header}>
           <h2 className={styles.title}>{activityId ? 'Editar Atividade' : 'Nova Atividade'}</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={onClose} aria-label="Fechar">×</button>
         </div>
 
-        <div className={styles.body} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className={styles.body}>
           
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Tipo</label>
-                <select name="type" value={formData.type} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }}>
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+                <label className={styles.label}>Tipo</label>
+                <select name="type" value={formData.type} onChange={handleChange} className={styles.select}>
                   <option value="project">Fase / Projeto Macro</option>
                   <option value="task">Subtarefa</option>
                   <option value="milestone">Marco (Milestone)</option>
                 </select>
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Fase Pai (Opcional)</label>
-                <select name="parentId" value={formData.parentId || ''} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }}>
+            <div className={styles.field}>
+                <label className={styles.label}>Fase Pai (Opcional)</label>
+                <select name="parentId" value={formData.parentId || ''} onChange={handleChange} className={styles.select}>
                   <option value="">Nenhuma</option>
                   {otherActivities.filter(a => a.type === 'project').map(a => (
                     <option key={a.id} value={a.id}>{a.name}</option>
@@ -105,30 +105,30 @@ export default function ProjectDetailModal({ projectId, activityId, onClose }: P
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label>Nome da Atividade</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }} />
+          <div className={styles.field}>
+            <label className={styles.label}>Nome da Atividade</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} className={styles.input} placeholder="Ex: Desenvolvimento de API" />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Data de Início</label>
-                <input type="date" name="start" value={formData.start} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }} />
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+                <label className={styles.label}>Data de Início</label>
+                <input type="date" name="start" value={formData.start} onChange={handleChange} className={styles.input} />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Data de Fim</label>
-                <input type="date" name="end" value={formData.end} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }} />
+            <div className={styles.field}>
+                <label className={styles.label}>Data de Fim</label>
+                <input type="date" name="end" value={formData.end} onChange={handleChange} className={styles.input} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Progresso (%)</label>
-                <input type="number" name="progress" min="0" max="100" value={formData.progress} onChange={handleProgressChange} style={{ padding: '8px', borderRadius: '4px' }} />
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+                <label className={styles.label}>Progresso ({formData.progress}%)</label>
+                <input type="range" name="progress" min="0" max="100" value={formData.progress} onChange={handleProgressChange} className={styles.input} style={{ padding: '0.5rem 0' }} />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Status</label>
-                <select value={status} onChange={(e) => setStatus(e.target.value as ActivityStatus)} style={{ padding: '8px', borderRadius: '4px' }}>
+            <div className={styles.field}>
+                <label className={styles.label}>Status</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value as ActivityStatus)} className={styles.select}>
                   <option value="dentro-do-prazo">Dentro do Prazo</option>
                   <option value="proximo-do-prazo">Próxima do Vencimento</option>
                   <option value="atrasada">Atrasada</option>
@@ -137,19 +137,19 @@ export default function ProjectDetailModal({ projectId, activityId, onClose }: P
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Responsável</label>
-                <input type="text" name="assignee" value={formData.assignee} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }} />
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+                <label className={styles.label}>Responsável</label>
+                <input type="text" name="assignee" value={formData.assignee} onChange={handleChange} className={styles.input} placeholder="Nome do responsável" />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label>Equipe</label>
-                <input type="text" name="team" value={formData.team} onChange={handleChange} style={{ padding: '8px', borderRadius: '4px' }} />
+            <div className={styles.field}>
+                <label className={styles.label}>Equipe</label>
+                <input type="text" name="team" value={formData.team} onChange={handleChange} className={styles.input} placeholder="Nome da equipe" />
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label>Depende de (Bloqueada por)</label>
+          <div className={styles.field}>
+            <label className={styles.label}>Depende de (Bloqueada por)</label>
             <select 
               multiple 
               name="dependencies" 
@@ -158,7 +158,8 @@ export default function ProjectDetailModal({ projectId, activityId, onClose }: P
                 const values = Array.from(e.target.selectedOptions, option => option.value);
                 setFormData(prev => ({ ...prev, dependencies: values }));
               }} 
-              style={{ padding: '8px', borderRadius: '4px', height: '80px' }}
+              className={styles.select}
+              style={{ height: 'auto', minHeight: '80px' }}
             >
               {otherActivities.map(a => (
                 <option key={a.id} value={a.id}>{a.name}</option>
@@ -166,16 +167,16 @@ export default function ProjectDetailModal({ projectId, activityId, onClose }: P
             </select>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label>Descrição</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} style={{ padding: '8px', borderRadius: '4px' }} />
+          <div className={styles.field}>
+            <label className={styles.label}>Descrição</label>
+            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className={styles.textarea} placeholder="Detalhes da atividade..." />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+          <div className={styles.actions}>
              {activityId ? (
-                 <button onClick={handleDelete} style={{ padding: '10px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>EXCLUIR</button>
+                 <button onClick={handleDelete} className={styles.deleteButton}>EXCLUIR ATIVIDADE</button>
              ) : (<div></div>)}
-             <button onClick={handleAction} style={{ padding: '10px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>SALVAR</button>
+             <button onClick={handleAction} className={styles.saveButton}>SALVAR ATIVIDADE</button>
           </div>
 
         </div>
