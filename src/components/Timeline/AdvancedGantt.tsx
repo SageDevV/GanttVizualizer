@@ -25,7 +25,7 @@ export default function AdvancedGantt({
   const context = useContext(ProjectContext);
   if (!context) return null;
 
-  const { state, dispatch } = context;
+  const { state, updateActivity } = context;
 
   // Filter activities for this project and apply other filters
   const activities = useMemo(() => {
@@ -96,14 +96,11 @@ export default function AdvancedGantt({
     if (!activity) return;
 
     // Update context
-    dispatch({
-      type: 'UPDATE_ACTIVITY',
-      payload: {
-        ...activity,
-        start: formatDate(task.start),
-        end: formatDate(task.end),
-        progress: task.progress,
-      }
+    updateActivity({
+      ...activity,
+      start: formatDate(task.start),
+      end: formatDate(task.end),
+      progress: task.progress,
     });
   };
 

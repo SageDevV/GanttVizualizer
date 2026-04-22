@@ -67,7 +67,8 @@ export type ProjectAction =
   | { type: 'ADD_ACTIVITY'; payload: Activity }
   | { type: 'UPDATE_ACTIVITY'; payload: Activity }
   | { type: 'DELETE_ACTIVITY'; payload: string }
-  | { type: 'UPDATE_ACTIVITY_DATES'; payload: { id: string; start: string; end: string } };
+  | { type: 'UPDATE_ACTIVITY_DATES'; payload: { id: string; start: string; end: string } }
+  | { type: 'SET_LOADING'; payload: boolean };
 
 export interface ValidationError {
   field: string;

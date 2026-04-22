@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { ProjectFormData, ValidationError } from '../../types/project';
 import { validateProjectForm } from '../../utils/validationUtils';
-import FeatureFieldList from './FeatureFieldList';
 import styles from './ProjectForm.module.css';
 
 interface ProjectFormProps {
@@ -14,7 +13,6 @@ export default function ProjectForm({ onClose, onSubmit }: ProjectFormProps) {
   const [responsavel, setResponsavel] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
-  const [funcionalidades, setFuncionalidades] = useState<string[]>([]);
   const [descricao, setDescricao] = useState('');
   const [errors, setErrors] = useState<ValidationError[]>([]);
 
@@ -30,7 +28,7 @@ export default function ProjectForm({ onClose, onSubmit }: ProjectFormProps) {
       responsavel,
       dataInicio,
       dataFim,
-      funcionalidades,
+      funcionalidades: [],
       descricao,
     };
 
@@ -175,10 +173,6 @@ export default function ProjectForm({ onClose, onSubmit }: ProjectFormProps) {
             </div>
           </div>
 
-          <FeatureFieldList
-            funcionalidades={funcionalidades}
-            onChange={setFuncionalidades}
-          />
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="descricao">
@@ -212,7 +206,7 @@ export default function ProjectForm({ onClose, onSubmit }: ProjectFormProps) {
               Cancelar
             </button>
             <button className={styles.submitButton} type="submit">
-              Criar Projeto
+              Criar Novo Projeto
             </button>
           </div>
         </form>

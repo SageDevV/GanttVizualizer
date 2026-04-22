@@ -60,6 +60,11 @@ export function projectReducer(state: ProjectState, action: ProjectAction): Proj
           return a;
         }),
       };
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      };
     default:
       return state;
   }
