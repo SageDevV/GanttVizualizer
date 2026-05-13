@@ -1,6 +1,10 @@
 import { useMemo, useContext } from 'react';
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
-import { PortugueseTaskListHeader } from './GanttCustomComponents';
+import {
+  PortugueseTaskListHeader,
+  PortugueseTaskListTable,
+} from './GanttCustomComponents';
+import { getGanttColumnWidth } from './ganttHelpers';
 import "gantt-task-react/dist/index.css";
 import { ProjectContext } from '../../context/ProjectContext';
 import { Activity } from '../../types/project';
@@ -140,8 +144,9 @@ export default function AdvancedGantt({
         onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
         listCellWidth="155px"
-        columnWidth={viewMode === ViewMode.Month ? 150 : viewMode === ViewMode.Week ? 150 : 60}
+        columnWidth={getGanttColumnWidth(viewMode)}
         TaskListHeader={PortugueseTaskListHeader}
+        TaskListTable={PortugueseTaskListTable}
       />
     </div>
   );

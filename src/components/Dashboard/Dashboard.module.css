@@ -6,6 +6,18 @@
   color: #f8fafc;
 }
 
+/*
+ * Modifier aplicado quando a aba "Roadmap" está ativa.
+ * Faz o dashboard ocupar toda a largura disponível do navegador,
+ * permitindo que a Timeline Mãe aproveite o espaço horizontal
+ * integralmente.
+ */
+.dashboardFullWidth {
+  max-width: 100%;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -111,7 +123,8 @@
   border-radius: 1.5rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .gerencialContent {

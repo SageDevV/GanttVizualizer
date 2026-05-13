@@ -6,7 +6,11 @@ import NewProjectButton from './NewProjectButton';
 import ProjectForm from '../ProjectForm/ProjectForm';
 import type { ProjectFormData } from '../../types/project';
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
-import { PortugueseTaskListHeader } from '../Timeline/GanttCustomComponents';
+import {
+  PortugueseTaskListHeader,
+  PortugueseTaskListTable,
+} from '../Timeline/GanttCustomComponents';
+import { getGanttColumnWidth } from '../Timeline/ganttHelpers';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
@@ -59,7 +63,11 @@ export default function Dashboard() {
   }, [state.projects, state.activities]);
 
   return (
-    <div className={styles.dashboard}>
+    <div
+      className={`${styles.dashboard} ${
+        activeTab === 'gerencial' ? styles.dashboardFullWidth : ''
+      }`}
+    >
       <header className={styles.header}>
         <div className={styles.titleGroup}>
           <h1 className={styles.title}>Visão Gerencial</h1>
@@ -75,7 +83,7 @@ export default function Dashboard() {
               onClick={() => setActiveTab('gerencial')}
               className={`${styles.tabButton} ${activeTab === 'gerencial' ? styles.tabButtonActive : ''}`}
             >
-              Timeline Mãe (Todos os Projetos)
+              Roadmap
             </button>
           </div>
         </div>
@@ -130,7 +138,9 @@ export default function Dashboard() {
                       locale="pt-BR"
                       viewMode={viewMode}
                       listCellWidth="155px"
+                      columnWidth={getGanttColumnWidth(viewMode)}
                       TaskListHeader={PortugueseTaskListHeader}
+                      TaskListTable={PortugueseTaskListTable}
                     />
                   </div>
                 ) : (
